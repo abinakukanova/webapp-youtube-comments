@@ -134,3 +134,4 @@ wcwidth==0.2.13
 websockets==12.0
 wsproto==1.2.0
 youtube-comment-downloader==0.1.76
+transformers==4.42.1
