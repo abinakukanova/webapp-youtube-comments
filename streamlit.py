@@ -95,27 +95,4 @@ if submit_button:
 
 
 
-if st.button("Получить краткое содержание"):
-    grouped_comments = group_comments(comments[2], max_tokens=400)
-    comments_per_page = 3
-    page_number = st.session_state.get("page_number", 1)
-    if st.button("Получить краткое содержание"):
-        st.session_state.page_number = 1  # сбрасываем номер страницы при каждом новом нажатии кнопки
-        with st.spinner("Подождите пожалуйста! Комментарии обрабатываются..."):
-            display_comments(grouped_comments, st.session_state.page_number, comments_per_page)
 
-    if "page_number" in st.session_state and st.session_state.page_number * comments_per_page < len(grouped_comments):
-        if st.button("Ещё"):
-            st.session_state.page_number += 1
-            display_comments(grouped_comments, st.session_state.page_number, comments_per_page)  
-
-
-@st.cache_data 
-def display_comments(grouped_comments, page_number, comments_per_page):
-    start_index = (page_number - 1) * comments_per_page
-    end_index = start_index + comments_per_page
-
-    for i in range(start_index, min(end_index, len(grouped_comments))):
-        summary =  pipe(grouped_comments[i])[0]['summary_text']
-        st.write(f"*Группа комментариев {i+1}:*")
-        st.write(summary)
