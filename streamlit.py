@@ -18,10 +18,7 @@ import nltk
 nltk.download('all')
 from nltk import (sent_tokenize as splitter, wordpunct_tokenize as tokenizer)
 from collections import Counter
-from nltk.tokenize import word_tokenize
-from transformers import pipeline
 
-pipe = pipeline("summarization", model="IlyaGusev/mbart_ru_sum_gazeta")
 dataset = TwitterDataset('twitter_prep_data_brackets.pickle')
 model = joblib.load('abina_model.sav')
 
@@ -29,30 +26,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 embedding_size = 300
 hidden_size    = 128
 output_size    = 1
-
-def group_comments(comments, max_tokens=400):
-    """
-    Объединяет комментарии в строки, ограничивая их длину 400 токенами.
-    """
-    grouped_comments = []
-    current_tokens = []
-    current_comment = ""
-
-    for comment in comments:
-        tokens = word_tokenize(comment)
-        if len(current_tokens) + len(tokens) <= max_tokens:
-            current_tokens.extend(tokens)
-            current_comment += comment + " "
-        else:
-            grouped_comments.append(current_comment.strip())
-            current_tokens = tokens
-            current_comment = comment + " "
-
-    # Добавляем последний комментарий
-    if current_comment:
-        grouped_comments.append(current_comment.strip())
-
-    return grouped_comments
 
 def download(message: str):
     comments_text = []
@@ -66,7 +39,7 @@ def download(message: str):
     except Exception:
         result = 'Ошибка в ссылке'
         comments_df = ''
-    return result, comments_df, comments_text
+    return result, comments_df
 
 def predict_sentiment(sentence: str):
     model.eval()
@@ -92,7 +65,3 @@ if submit_button:
     df_comments.groupby('sentiment').count().plot(kind="bar")
     plt.savefig('abr.png')
     st.image('abr.png', caption='Диаграмма распределения позитивных (1) и негативных (0) отзывов')
-
-
-
-
